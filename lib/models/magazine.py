@@ -11,6 +11,11 @@ class Magazine:
 
     @classmethod
     def create(cls, name: str, category: str):
+        if not name or not isinstance(name, str):
+            raise ValueError("Magazine name must be a non-empty string.")
+        if not category or not isinstance(category, str):
+            raise ValueError("Category must be a non-empty string.")
+            
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(
@@ -44,7 +49,7 @@ class Magazine:
         return [cls(row["id"], row["name"], row["category"]) for row in cursor.fetchall()]
 
     def contributors(self):
-        from lib.models.author import Author
+        from lib.models.author import Author  # Avoid circular import
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -56,7 +61,7 @@ class Magazine:
         return [Author(row["id"], row["name"]) for row in cursor.fetchall()]
 
     def articles(self):
-        from lib.models.article import Article
+        from lib.models.article import Article  # Avoid circular import
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM articles WHERE magazine_id = ?", (self.id,))
@@ -69,7 +74,7 @@ class Magazine:
         return [row["title"] for row in cursor.fetchall()]
 
     def contributing_authors(self):
-        from lib.models.author import Author
+        from lib.models.author import Author  # Avoid circular import
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""

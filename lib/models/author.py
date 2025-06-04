@@ -36,14 +36,14 @@ class Author:
         return cls(row["id"], row["name"]) if row else None
 
     def articles(self):
-        from lib.models.article import Article
+        from lib.models.article import Article  # Avoid circular import
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM articles WHERE author_id = ?", (self.id,))
         return [Article(row["id"], row["title"], row["author_id"], row["magazine_id"]) for row in cursor.fetchall()]
 
     def magazines(self):
-        from lib.models.magazine import Magazine
+        from lib.models.magazine import Magazine  # Avoid circular import
         conn = get_connection()
         cursor = conn.cursor()
         cursor.execute("""
@@ -55,7 +55,7 @@ class Author:
         return [Magazine(row["id"], row["name"], row["category"]) for row in cursor.fetchall()]
 
     def add_article(self, magazine, title: str):
-        from lib.models.article import Article
+        from lib.models.article import Article  # Avoid circular import
         if not title or not isinstance(title, str):
             raise ValueError("Article title must be a non-empty string.")
         if not magazine or not hasattr(magazine, 'id'):
